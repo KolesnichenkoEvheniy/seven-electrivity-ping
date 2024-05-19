@@ -5,7 +5,7 @@
 #include <WiFiManager.h>
 #include <WiFiClientSecure.h>
 
-String FirmwareVer = "1.1"; // current firmware version.
+String FirmwareVer = "1.2"; // current firmware version.
 WiFiClientSecure client;
 const char* string1 = FirmwareVer.c_str();
 
