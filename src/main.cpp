@@ -13,7 +13,32 @@ const char* string1 = FirmwareVer.c_str();
 #define URL_fw_Version "https://raw.githubusercontent.com/KolesnichenkoEvheniy/seven-electrivity-ping/main/ota/version.txt"
 #define URL_fw_Bin "https://raw.githubusercontent.com/KolesnichenkoEvheniy/seven-electrivity-ping/main/ota/latest.bin"
 #define LED_BUILTIN 2
-#define SITE_FINGERPRINT "97:D8:C5:70:0F:12:24:6C:88:BC:FA:06:7E:8C:A7:4D:A8:62:67:28"
+#define SITE_FINGERPRINT "09:01:0C:CE:9B:72:21:55:C7:E6:86:B0:77:39:D3:D2:DC:06:05:DE:A1:A4:98:4A:0B:96:5E:18:77:77:26:B5"
+
+const char* test_root_ca= \
+  "-----BEGIN CERTIFICATE-----\n" \
+  "MIIDjjCCAnagAwIBAgIQAzrx5qcRqaC7KGSxHQn65TANBgkqhkiG9w0BAQsFADBh\n" \
+  "MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\n" \
+  "d3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBH\n" \
+  "MjAeFw0xMzA4MDExMjAwMDBaFw0zODAxMTUxMjAwMDBaMGExCzAJBgNVBAYTAlVT\n" \
+  "MRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5j\n" \
+  "b20xIDAeBgNVBAMTF0RpZ2lDZXJ0IEdsb2JhbCBSb290IEcyMIIBIjANBgkqhkiG\n" \
+  "9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuzfNNNx7a8myaJCtSnX/RrohCgiN9RlUyfuI\n" \
+  "2/Ou8jqJkTx65qsGGmvPrC3oXgkkRLpimn7Wo6h+4FR1IAWsULecYxpsMNzaHxmx\n" \
+  "1x7e/dfgy5SDN67sH0NO3Xss0r0upS/kqbitOtSZpLYl6ZtrAGCSYP9PIUkY92eQ\n" \
+  "q2EGnI/yuum06ZIya7XzV+hdG82MHauVBJVJ8zUtluNJbd134/tJS7SsVQepj5Wz\n" \
+  "tCO7TG1F8PapspUwtP1MVYwnSlcUfIKdzXOS0xZKBgyMUNGPHgm+F6HmIcr9g+UQ\n" \
+  "vIOlCsRnKPZzFBQ9RnbDhxSJITRNrw9FDKZJobq7nMWxM4MphQIDAQABo0IwQDAP\n" \
+  "BgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBhjAdBgNVHQ4EFgQUTiJUIBiV\n" \
+  "5uNu5g/6+rkS7QYXjzkwDQYJKoZIhvcNAQELBQADggEBAGBnKJRvDkhj6zHd6mcY\n" \
+  "1Yl9PMWLSn/pvtsrF9+wX3N3KjITOYFnQoQj8kVnNeyIv/iPsGEMNKSuIEyExtv4\n" \
+  "NeF22d+mQrvHRAiGfzZ0JFrabA0UWTW98kndth/Jsw1HKj2ZL7tcu7XUIOGZX1NG\n" \
+  "Fdtom/DzMNU+MeKNhJ7jitralj41E6Vf8PlwUHBHQRFXGU7Aj64GxJUTFy8bJZ91\n" \
+  "8rGOmaFvE7FBcf6IKshPECBV1/MUReXgRPTqh5Uykw7+U0b6LJ3/iyK5S9kJRaTe\n" \
+  "pLiaWN0bfVKfjllDiIGknibVb63dDcY3fe0Dkhvld1927jyNxF1WW6LZZm6zNTfl\n" \
+  "MrY=\n" \
+  "-----END CERTIFICATE-----\n";
+
 
 HTTPClient http;
 
@@ -27,8 +52,9 @@ void FirmwareUpdate()
   
   // check version URL, Thumbprint(Fingerprint) of Website and thumbprint is change in some months.
   // you can find website thumbprint using this website : https://www.grc.com/fingerprints.htm
-  client.setInsecure();
-  http.begin(URL_fw_Version, SITE_FINGERPRINT);
+  // client.setInsecure();
+  client.setCACert(test_root_ca);
+  http.begin(URL_fw_Version);
 
   delay(100);
   int httpCode = http.GET();            // get data from version file
@@ -65,7 +91,7 @@ void FirmwareUpdate()
       Serial.println("\n New firmware detected");
       WiFiClient client;
 
-      t_httpUpdate_return ret = ESPhttpUpdate.update(URL_fw_Bin, "", SITE_FINGERPRINT);
+      t_httpUpdate_return ret = ESPhttpUpdate.update(URL_fw_Bin, "");
 
       switch (ret) {
         case HTTP_UPDATE_FAILED:
