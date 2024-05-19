@@ -3,14 +3,17 @@
 #include <HTTPClient.h>
 #include <ESP32httpUpdate.h>
 #include <WiFiManager.h>
+#include <WiFiClientSecure.h>
 
 String FirmwareVer = "1.0"; // current firmware version.
+WiFiClientSecure client;
 const char* string1 = FirmwareVer.c_str();
 
 // Comment it if you use your private url.
-#define URL_fw_Version "https://raw.githubusercontent.com/KolesnichenkoEvheniy/seven-electrivity-ping/main/ota/version.txt?token=GHSAT0AAAAAACSQCFI2DWV7MM2CZ6WXEPBCZSKKOGQ"
+#define URL_fw_Version "https://raw.githubusercontent.com/KolesnichenkoEvheniy/seven-electrivity-ping/main/ota/version.txt"
 #define URL_fw_Bin "https://raw.githubusercontent.com/KolesnichenkoEvheniy/seven-electrivity-ping/main/ota/latest.bin"
 #define LED_BUILTIN 2
+#define SITE_FINGERPRINT "97:D8:C5:70:0F:12:24:6C:88:BC:FA:06:7E:8C:A7:4D:A8:62:67:28"
 
 HTTPClient http;
 
@@ -24,7 +27,9 @@ void FirmwareUpdate()
   
   // check version URL, Thumbprint(Fingerprint) of Website and thumbprint is change in some months.
   // you can find website thumbprint using this website : https://www.grc.com/fingerprints.htm
-  http.begin(URL_fw_Version, "5B FB D1 D4 49 D3 0F A9 C6 40 03 34 BA E0 24 05 AA D2 E2 01");    
+  client.setInsecure();
+  http.begin(URL_fw_Version, SITE_FINGERPRINT);
+
   delay(100);
   int httpCode = http.GET();            // get data from version file
   delay(100);
@@ -60,7 +65,7 @@ void FirmwareUpdate()
       Serial.println("\n New firmware detected");
       WiFiClient client;
 
-      t_httpUpdate_return ret = ESPhttpUpdate.update(URL_fw_Bin, "", "5B FB D1 D4 49 D3 0F A9 C6 40 03 34 BA E0 24 05 AA D2 E2 01");
+      t_httpUpdate_return ret = ESPhttpUpdate.update(URL_fw_Bin, "", SITE_FINGERPRINT);
 
       switch (ret) {
         case HTTP_UPDATE_FAILED:
@@ -80,7 +85,7 @@ void FirmwareUpdate()
 }
 
 unsigned long previousMillis = 0;        // will store last time LED was updated
-const long interval = 1*60*1000; // 1 Minute interval (60*1000= 60 Second)
+const long interval = 1*20*1000; // 1 Minute interval (60*1000= 60 Second)
 
 void repeatedCall() {
   unsigned long currentMillis = millis();
