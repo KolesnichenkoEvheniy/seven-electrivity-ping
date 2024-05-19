@@ -8,13 +8,9 @@ String FirmwareVer = "1.0"; // current firmware version.
 const char* string1 = FirmwareVer.c_str();
 
 // Comment it if you use your private url.
-#define URL_fw_Version "https://raw.githubusercontent.com/vadaliya/ota/master/version.txt"
-#define URL_fw_Bin "https://raw.githubusercontent.com/vadaliya/ota/master/firmware1.bin"
+#define URL_fw_Version "https://raw.githubusercontent.com/KolesnichenkoEvheniy/seven-electrivity-ping/main/ota/version.txt?token=GHSAT0AAAAAACSQCFI2DWV7MM2CZ6WXEPBCZSKKOGQ"
+#define URL_fw_Bin "https://raw.githubusercontent.com/KolesnichenkoEvheniy/seven-electrivity-ping/main/ota/latest.bin"
 #define LED_BUILTIN 2
-
-// if you've your website then you can put your website url below and uncomment it.
-//#define URL_fw_Version "http://vadaliya2007.000webhostapp.com/atte/ota/version.txt"
-//#define URL_fw_Bin "http://vadaliya2007.000webhostapp.com/atte/ota/firmware.bin"
 
 HTTPClient http;
 
@@ -132,9 +128,9 @@ void setup()
 }
 void loop()
 {
-  digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(1000);                       // wait for a second
-  digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
-  delay(1000);                       // wait for a second
-  //repeatedCall();
+  // digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
+  // delay(1000);                       // wait for a second
+  // digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
+  // delay(1000);                       // wait for a second
+  repeatedCall();
 }
