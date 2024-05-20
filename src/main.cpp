@@ -5,7 +5,7 @@
 #include <WiFiManager.h>
 #include <WiFiClientSecure.h>
 
-String FirmwareVer = "1.2"; // current firmware version.
+String FirmwareVer = "1.3"; // current firmware version.
 WiFiClientSecure client;
 const char* string1 = FirmwareVer.c_str();
 
@@ -41,6 +41,7 @@ const char* test_root_ca= \
 
 
 HTTPClient http;
+ESP32HTTPUpdate httpUpdate;
 
 // const char* ssid = "Your_SSID"; // Put your wifi name here
 // const char* password = "your_password"; // put your wifi password here, if it's open then only declare = ""
@@ -91,7 +92,9 @@ void FirmwareUpdate()
       Serial.println("\n New firmware detected");
       WiFiClient client;
 
-      t_httpUpdate_return ret = ESPhttpUpdate.update(URL_fw_Bin, "");
+      httpUpdate.rebootOnUpdate(false); // remove automatic update
+
+      t_httpUpdate_return ret = ESPhttpUpdate.update(URL_fw_Bin);
 
       switch (ret) {
         case HTTP_UPDATE_FAILED:
@@ -105,6 +108,23 @@ void FirmwareUpdate()
         case HTTP_UPDATE_OK:
           Serial.println("\n HTTP_UPDATE_OK");
           break;
+      }
+      switch (ret) {
+          case HTTP_UPDATE_FAILED:
+            Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s\n", httpUpdate.getLastError(), httpUpdate.getLastErrorString().c_str());
+            Serial.println(F("Retry in 10secs!"));
+            delay(10000); // Wait 10secs
+            break;
+    
+          case HTTP_UPDATE_NO_UPDATES:
+            Serial.println("HTTP_UPDATE_NO_UPDATES");
+            break;
+    
+          case HTTP_UPDATE_OK:
+            Serial.println("HTTP_UPDATE_OK");
+            delay(1000); // Wait a second and restart
+            ESP.restart();
+            break;
       }
     }
   }
@@ -133,6 +153,12 @@ void setup()
   Serial.println("");
   Serial.println("Start");
 
+  for (uint8_t t = 4; t > 0; t--) {
+    Serial.printf("[SETUP] WAIT %d...\n", t);
+    Serial.flush();
+    delay(1000);
+  }
+
   bool res;
     // res = wm.autoConnect(); // auto generated AP name from chipid
     // res = wm.autoConnect("AutoConnectAP"); // anonymous ap
@@ -155,7 +181,27 @@ void setup()
     Serial.print(".");
   }
   Serial.println("Connected to WiFi");
+
+  Serial.print(F("Firmware version "));
+  Serial.println(FirmwareVer);
+
   pinMode(LED_BUILTIN, OUTPUT);
+  Serial.print(F("Inizializing FS..."));
+  if (SPIFFS.begin()){
+      Serial.println(F("done."));
+  }else{
+      Serial.println(F("fail."));
+  }
+ 
+  String fileSystemVersion = "Not set!";
+  Serial.print(F("FileSystem version "));
+  File versionFile = SPIFFS.open(F("/version.txt"), "r");
+  if (versionFile) {
+      fileSystemVersion = versionFile.readString();
+      versionFile.close();
+  }
+  Serial.println(fileSystemVersion);
+  delay(2000);
 }
 void loop()
 {
