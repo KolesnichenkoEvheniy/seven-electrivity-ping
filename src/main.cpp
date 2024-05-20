@@ -5,7 +5,7 @@
 #include <WiFiManager.h>
 #include <WiFiClientSecure.h>
 
-String FirmwareVer = "1.3"; // current firmware version.
+String FirmwareVer = "1.2"; // current firmware version.
 WiFiClientSecure client;
 const char* string1 = FirmwareVer.c_str();
 
@@ -193,14 +193,14 @@ void setup()
       Serial.println(F("fail."));
   }
  
-  String fileSystemVersion = "Not set!";
-  Serial.print(F("FileSystem version "));
-  File versionFile = SPIFFS.open(F("/version.txt"), "r");
-  if (versionFile) {
-      fileSystemVersion = versionFile.readString();
-      versionFile.close();
-  }
-  Serial.println(fileSystemVersion);
+  // String fileSystemVersion = "Not set!";
+  // Serial.print(F("FileSystem version "));
+  // File versionFile = SPIFFS.open(F("/version.txt"), "r");
+  // if (versionFile) {
+  //     fileSystemVersion = versionFile.readString();
+  //     versionFile.close();
+  // }
+  // Serial.println(fileSystemVersion);
   delay(2000);
 }
 void loop()
